@@ -21,28 +21,6 @@ features_complete_list_dummies = pickle.load(open('features_complete_list_dummie
 
 ####################################
 
-def display_info_hotel(df_hotels_item):
-    
-    return '----------------' + '\n' + 'Negative mentions per topic: '
-
-    # print('Hotel name: ',df_hotels_item['hotel_name'].values[0])
-    # print('---------------------')
-    # print('Negative mentions per topic: ')
-    # print('(0)  Noise/Smell/AC-Heat: ', str(int(df_hotels_item['0_neg'])))
-    # print('(1)  Staff/Check-in/out: ', str(int(df_hotels_item['1_neg'])))
-    # print('(2)  Breakfast: ', str(int(df_hotels_item['2_neg'])))
-    # print('(3)  Facilities: ', str(int(df_hotels_item['3_neg'])))
-    # #print('(4)  Parking: ', str(int(df_hotels_item['4_neg'])))
-    # #print('(5)  Smell: ', str(int(df_hotels_item['5_neg'])))
-    # #print('(6)  AC/Heat: ', str(int(df_hotels_item['6_neg'])))
-    # #print('(7)  Wi-Fi: ', str(int(df_hotels_item['7_neg'])))
-    # print('(4)  Location: ', str(int(df_hotels_item['4_neg'])))
-    # #print('(9)  Check-in/Check-out: ', str(int(df_hotels_item['9_neg'])))
-    # print('(5) Bathroom: ', str(int(df_hotels_item['5_neg'])))
-    # print('(6) Room amenities: ', str(int(df_hotels_item['6_neg'])))
-    # print('(7) Bed: ', str(int(df_hotels_item['7_neg'])))
-    # #print('Other/no topic: ', str(int(df_hotels_item['-1_neg'])))
-
 def change_topic_counts(df_hotel_item,counts_delta_vec):
     
     df_hotel_item_cp = df_hotel_item.copy()
@@ -55,15 +33,7 @@ def change_topic_counts(df_hotel_item,counts_delta_vec):
     df_hotel_item_cp.at[0,'5_neg'] += counts_delta_vec[5]
     df_hotel_item_cp.at[0,'6_neg'] += counts_delta_vec[6]
     df_hotel_item_cp.at[0,'7_neg'] += counts_delta_vec[7]
-    #df_hotel_item_cp.at[0,'8_neg'] += counts_delta_vec[8]
-    #df_hotel_item_cp.at[0,'9_neg'] += counts_delta_vec[9]
-    #df_hotel_item_cp.at[0,'10_neg'] += counts_delta_vec[10]
-    #df_hotel_item_cp.at[0,'11_neg'] += counts_delta_vec[11]
-    #df_hotel_item_cp.at[0,'12_neg'] += counts_delta_vec[12]
-    #df_hotel_item_cp.at[0,'sentences_count_neg'] +=sum(counts_delta_vec)
     df_hotel_item_cp[[str(n)+'_pc_neg' for n in range(-1,8)]] = 100*df_hotel_item_cp[[str(n)+'_neg' for n in range(-1,8)]].div(df_hotel_item_cp.sentences_count_neg, axis=0)
-    
-    #display_info_hotel(df_hotel_item_cp)
     return df_hotel_item_cp
 
 def get_price_prediction(model,cat_feat,feat_compl_list,feat_compl_list_dum,df_hotel_item):
@@ -105,14 +75,20 @@ app.layout = html.Div([
 
     html.H1(
         children='Hotel Review Analyzer',
-        style={
-            'textAlign': 'center'
-        }
+        style={'textAlign': 'center'}
     ),
 
-    html.Br(),
+    html.Div(children='an interactive tool that helps hotel',
+             style={'textAlign': 'center'}),
+    html.Div(children='managers answer the question:',
+             style={'textAlign': 'center'}),
+    html.Div(children='"how much do bad reviews cost?"',
+             style={'textAlign': 'center'}),
+
+    html.Br(),html.Br(),html.Br(),
     html.Div(children='Choose one of the following hotels in New York:'),
     html.Div(children='[format: name (zip code)]'),   
+    html.Br(),
 
     dcc.Dropdown(
         id='hotel-name',
@@ -121,10 +97,32 @@ app.layout = html.Div([
     ),
     html.Br(),
 
-    html.Div(id='hotel-name-output'),
+    html.Div('Negative mentions per topic:'),
+    html.Div('-----------------------------------'),
+    html.Div(id='hotel-neg-4'),
+    html.Div(id='hotel-neg-3'),
+    html.Div(id='hotel-neg-1'),
+    html.Div(id='hotel-neg-2'),
+    html.Div(id='hotel-neg-0'),
+    html.Div(id='hotel-neg-6'),
+    html.Div(id='hotel-neg-5'),
+    html.Div(id='hotel-neg-7'),
+    html.Div('-----------------------------------'),
 
-    html.Label('Room Comfort: '),
-    dcc.Input(id='input-neg-0', value='0', type='text'),
+    html.Br(),
+    html.Div(children='Adjust the number of negative mentions per topic:'),
+    html.Div(children='[0 (default): no change]'),
+    html.Div(children='[-1: decrease number by 1]'),
+    html.Div(children='[+1: increase number by 1]'),
+
+    html.Br(),       
+    html.Label('Location: '),
+    dcc.Input(id='input-neg-4', value='0', type='text'),
+    html.Label(' (e.g. surroundings, view, distance from attractions, transportation options)'),
+    html.Br(),
+    html.Label('Facilities: '),
+    dcc.Input(id='input-neg-3', value='0', type='text'),
+    html.Label(' (e.g. elevators, gym, pool, bar, restaurant, parking, wi-fi)'),
     html.Br(),
     html.Label('Staff: '),
     dcc.Input(id='input-neg-1', value='0', type='text'),
@@ -132,19 +130,18 @@ app.layout = html.Div([
     html.Label('Breakfast: '),
     dcc.Input(id='input-neg-2', value='0', type='text'),
     html.Br(),
-    html.Label('Facilities: '),
-    dcc.Input(id='input-neg-3', value='0', type='text'),
+    html.Label('Room Comfort: '),
+    dcc.Input(id='input-neg-0', value='0', type='text'),
+    html.Label(' (e.g. noise, ac/heating, smell)'),
     html.Br(),
-    html.Label('Location: '),
-    dcc.Input(id='input-neg-4', value='0', type='text'),
+    html.Label('Room Amenities: '),
+    dcc.Input(id='input-neg-6', value='0', type='text'),
+    html.Label(' (e.g. tv, fridge, coffee/tea maker, room service, appearance, furniture)'),
     html.Br(),
     html.Label('Bathroom: '),
     dcc.Input(id='input-neg-5', value='0', type='text'),
     html.Br(),
-    html.Label('Room Amenities: '),
-    dcc.Input(id='input-neg-6', value='0', type='text'),
-    html.Br(),
-    html.Label('Bed: '),
+    html.Label('Bed Quality: '),
     dcc.Input(id='input-neg-7', value='0', type='text'),
     html.Br(),html.Br(),
 
@@ -153,18 +150,77 @@ app.layout = html.Div([
 
 ])
 
+####################################
+
+# @app.callback(
+#     Output('neg-mentions-header','children'),
+#     [Input('hotel-name', 'value')])
+# def print_neg_mention_header(hotel_name):
+#     return 'Negative mentionssss per topic:'
+
+####################################
+
 @app.callback(
-    Output('hotel-name-output','children'),
+    Output('hotel-neg-0','children'),
     [Input('hotel-name', 'value')])
-def print_hotel_info(hotel_name):
+def print_hotel_neg_0(hotel_name):
+    hotel_item = df_hotels[df_hotels['hotel_unique_name']==hotel_name]
+    return 'Room Comfort: ' + str(int(hotel_item['0_neg']))
 
-    #display_info_hotel(df_hotels[df_hotels['hotel_unique_name']==hotel_name])
+@app.callback(
+    Output('hotel-neg-1','children'),
+    [Input('hotel-name', 'value')])
+def print_hotel_neg_1(hotel_name):
+    hotel_item = df_hotels[df_hotels['hotel_unique_name']==hotel_name]
+    return 'Staff: ' + str(int(hotel_item['1_neg']))
 
-    return hotel_name
+@app.callback(
+    Output('hotel-neg-2','children'),
+    [Input('hotel-name', 'value')])
+def print_hotel_neg_2(hotel_name):
+    hotel_item = df_hotels[df_hotels['hotel_unique_name']==hotel_name]
+    return 'Breakfast: ' + str(int(hotel_item['2_neg']))
+
+@app.callback(
+    Output('hotel-neg-3','children'),
+    [Input('hotel-name', 'value')])
+def print_hotel_neg_3(hotel_name):
+    hotel_item = df_hotels[df_hotels['hotel_unique_name']==hotel_name]
+    return 'Facilities: ' + str(int(hotel_item['3_neg']))
+
+@app.callback(
+    Output('hotel-neg-4','children'),
+    [Input('hotel-name', 'value')])
+def print_hotel_neg_4(hotel_name):
+    hotel_item = df_hotels[df_hotels['hotel_unique_name']==hotel_name]
+    return 'Location: ' + str(int(hotel_item['4_neg']))
+
+@app.callback(
+    Output('hotel-neg-5','children'),
+    [Input('hotel-name', 'value')])
+def print_hotel_neg_5(hotel_name):
+    hotel_item = df_hotels[df_hotels['hotel_unique_name']==hotel_name]
+    return 'Bathroom: ' + str(int(hotel_item['5_neg']))
+
+@app.callback(
+    Output('hotel-neg-6','children'),
+    [Input('hotel-name', 'value')])
+def print_hotel_neg_6(hotel_name):
+    hotel_item = df_hotels[df_hotels['hotel_unique_name']==hotel_name]
+    return 'Room Amenities: ' + str(int(hotel_item['6_neg']))
+
+@app.callback(
+    Output('hotel-neg-7','children'),
+    [Input('hotel-name', 'value')])
+def print_hotel_neg_7(hotel_name):
+    hotel_item = df_hotels[df_hotels['hotel_unique_name']==hotel_name]
+    return 'Bed Quality: ' + str(int(hotel_item['7_neg']))
+
+####################################
 
 @app.callback(
     Output('price-prediction','children'),
-    [Input('hotel-name-output', 'children'),
+    [Input('hotel-name', 'value'),
      Input('input-neg-0', 'value'),
      Input('input-neg-1', 'value'),
      Input('input-neg-2', 'value'),
@@ -184,6 +240,11 @@ def update_price_wrapper(hotel_name,input_neg_0,input_neg_1,input_neg_2,input_ne
     neg_5_int = int(input_neg_5)
     neg_6_int = int(input_neg_6)
     neg_7_int = int(input_neg_7)
+
+    if (int(input_hotel['0_neg'])+neg_0_int<0) or (int(input_hotel['1_neg'])+neg_1_int<0) or (int(input_hotel['2_neg'])+neg_2_int<0) or \
+       (int(input_hotel['3_neg'])+neg_3_int<0) or (int(input_hotel['4_neg'])+neg_4_int<0) or (int(input_hotel['5_neg'])+neg_5_int<0) or \
+       (int(input_hotel['6_neg'])+neg_6_int<0) or (int(input_hotel['7_neg'])+neg_7_int<0):
+        return 'You cannot have a negative number of mentions for a topic'
 
     counts_delta_vec = [neg_0_int,neg_1_int,neg_2_int,neg_3_int,neg_4_int,neg_5_int,neg_6_int,neg_7_int]
 
