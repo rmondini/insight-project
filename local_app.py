@@ -13,7 +13,7 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 ####################################
 
-df_hotels = pd.read_csv('./datasets/input_app/df_hotels_unique_names.csv')
+df_hotels = pd.read_csv('./input_app/df_hotels_unique_names.csv')
 reg = pickle.load(open('price_regression_model.sav','rb'))
 categorical_features = pickle.load(open('categorical_features.sav','rb'))
 features_complete_list = pickle.load(open('features_complete_list.sav','rb'))
