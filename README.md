@@ -2,7 +2,7 @@
 
 ### PROBLEM
 
-When searching for hotels, travelers weigh negative reviews more than all other factors (including price) and it is estimated that hotels can lose as much as 20% of bookings due to negative reviews. Hotels managers need to quickly identify the topics negatively discussed in reviews and address those issues. Reducing the number of negative reviews in turn allows managers to raise room prices.  
+When searching for hotels, travelers weigh negative reviews more than all other factors (including price) and it is estimated that hotels can lose as much as 20% of bookings due to negative reviews. Hotels managers need to quickly identify the topics negatively discussed in reviews and address those issues.  
 
 ### SOLUTION
 
