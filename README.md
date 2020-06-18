@@ -10,7 +10,7 @@ I built an interactive web app that helps hotel managers
 1. Quantify how much each specific topic is affecting room prices
 2. Predict by how much room prices can be increased in the absence of negative reviews.  
 
-The web app is hosted on AWS and can be found at [www.hotelreviewanalyzer.xyz](https://www.hotelreviewanalyzer.xyz:8050).  
+The web app is hosted on AWS and can be found at [www.hotelreviewanalyzer.xyz](http://www.hotelreviewanalyzer.xyz:8050).  
 
 ### CODE STRUCTURE
 
