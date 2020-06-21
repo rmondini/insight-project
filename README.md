@@ -2,7 +2,7 @@
 
 ### PROBLEM STATEMENT
 
-When searching for hotels, travelers weigh negative reviews more than all other factors (including price) and it is estimated that hotels can lose as much as 20% of bookings due to negative reviews. Hotels managers need to quickly identify the topics negatively discussed in reviews and address those issues. Reducing the number of negative reviews in turn allows managers to raise room prices.  
+When searching for hotels, travelers weigh negative reviews more than all other factors (including price) and it is estimated that hotels can lose as much as 20% of bookings due to negative reviews. Hotel managers need to quickly identify the topics negatively discussed in reviews and address those issues. Reducing the number of negative reviews in turn allows managers to raise room prices.  
 
 ### SOLUTION
 
@@ -29,7 +29,7 @@ There are two folders in this repository:
 
 The code uses the following external libraries: BeautifulSoup, Numpy, Pandas, Nltk, Gensim, Scikit-Learn, Matplotlib, Plotly, Dash.  
 
-The order in which the notebooks should be run is the same order in which they were listed in the previous section. As already mentioned, in order to save the user some time the files generated in `booking-reviews-scraping.ipynb` and needed by subsequent notebooks have already been included in the `datasets` folder (as well as the manually-annotated dataset needed in `reviews-topic-extraction.ipynb`).
+The order in which the notebooks should be run is the same order in which they were listed in the previous section. As already mentioned, in order to save the user some time the files generated in `booking-reviews-scraping.ipynb` and needed by subsequent notebooks have been included in the `datasets` folder (as well as the manually-annotated dataset needed in `reviews-topic-extraction.ipynb`).
 
 
 
