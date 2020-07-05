@@ -2,6 +2,7 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_daq as daq
 from dash.dependencies import Input, Output
 import pandas as pd
 import pickle
@@ -11,6 +12,7 @@ import plotly.graph_objects as go
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app.title = 'Hotel Review Analyzer'
 
 ####################################
 
@@ -26,16 +28,15 @@ def change_topic_counts(df_hotel_item,counts_delta_vec):
 
     df_hotel_item_cp = df_hotel_item.copy()
     df_hotel_item_cp.reset_index(drop=True,inplace=True)
-    df_hotel_item_cp.at[0,'0_neg'] += counts_delta_vec[0]
-    df_hotel_item_cp.at[0,'1_neg'] += counts_delta_vec[1]
-    df_hotel_item_cp.at[0,'2_neg'] += counts_delta_vec[2]
-    df_hotel_item_cp.at[0,'3_neg'] += counts_delta_vec[3]
-    df_hotel_item_cp.at[0,'4_neg'] += counts_delta_vec[4]
-    df_hotel_item_cp.at[0,'5_neg'] += counts_delta_vec[5]
-    df_hotel_item_cp.at[0,'6_neg'] += counts_delta_vec[6]
-    df_hotel_item_cp.at[0,'7_neg'] += counts_delta_vec[7]
+    df_hotel_item_cp.at[0,'0_neg'] = counts_delta_vec[0]
+    df_hotel_item_cp.at[0,'1_neg'] = counts_delta_vec[1]
+    df_hotel_item_cp.at[0,'2_neg'] = counts_delta_vec[2]
+    df_hotel_item_cp.at[0,'3_neg'] = counts_delta_vec[3]
+    df_hotel_item_cp.at[0,'4_neg'] = counts_delta_vec[4]
+    df_hotel_item_cp.at[0,'5_neg'] = counts_delta_vec[5]
+    df_hotel_item_cp.at[0,'6_neg'] = counts_delta_vec[6]
+    df_hotel_item_cp.at[0,'7_neg'] = counts_delta_vec[7]
     df_hotel_item_cp[[str(n)+'_pc_neg' for n in range(-1,8)]] = 100*df_hotel_item_cp[[str(n)+'_neg' for n in range(-1,8)]].div(df_hotel_item_cp.sentences_count_neg,axis=0)
-
     return df_hotel_item_cp
 
 def get_price_prediction(model,cat_feat,feat_compl_list,feat_compl_list_dum,df_hotel_item):
@@ -63,7 +64,6 @@ def update_price(model,cat_feat,feat_compl_list,feat_compl_list_dum,df_hotel_ite
     new_price = get_price_prediction(model,cat_feat,feat_compl_list,feat_compl_list_dum,df_hotel_item_changed)
     # per cent change
     per_cent_change = 100*(new_price-baseline_price)/baseline_price
-    
     return [baseline_price,new_price,per_cent_change]
 
 ####################################
@@ -85,7 +85,7 @@ app.layout = html.Div([
     html.Br(),html.Br(),html.Br(),
 
     dcc.Markdown('''
-Choose one of the following hotels in New York:  
+**Choose one of the following hotels in New York:**    
 \[format: name (zip code)\]
     '''),
 
@@ -96,40 +96,9 @@ Choose one of the following hotels in New York:
     ),
 
     html.Div(id='hotel-topic-table'),
+    html.Div(id='hotel-topic-sliders'),
 
-    dcc.Markdown('''
-Adjust the numbers for each topic:
-- 0 (default): no change
-- -1: decrease number by 1
-- +1: increase number by 1
-    '''),
-
-    html.Br(),       
-    html.Label('Location: '),
-    dcc.Input(id='input-neg-4', value='0', type='text', style={'width':40}),
     html.Br(),
-    html.Label('Facilities: '),
-    dcc.Input(id='input-neg-3', value='0', type='text', style={'width':40}),
-    html.Br(),
-    html.Label('Staff: '),
-    dcc.Input(id='input-neg-1', value='0', type='text', style={'width':40}),
-    html.Br(),
-    html.Label('Breakfast: '),
-    dcc.Input(id='input-neg-2', value='0', type='text', style={'width':40}),
-    html.Br(),
-    html.Label('Room Comfort: '),
-    dcc.Input(id='input-neg-0', value='0', type='text', style={'width':40}),
-    html.Br(),
-    html.Label('Room Amenities: '),
-    dcc.Input(id='input-neg-6', value='0', type='text', style={'width':40}),
-    html.Br(),
-    html.Label('Bathroom: '),
-    dcc.Input(id='input-neg-5', value='0', type='text', style={'width':40}),
-    html.Br(),
-    html.Label('Bed Quality: '),
-    dcc.Input(id='input-neg-7', value='0', type='text', style={'width':40}),
-    html.Br(),html.Br(),
-
     html.Div(id='price-prediction'),
     html.Br(),html.Br()
 
@@ -154,6 +123,51 @@ def print_hotel_topic_table(hotel_name):
     	              margin=dict(l=1,r=1,t=20,b=1))
 
     return html.Div([dcc.Graph(id='topic-table',figure=fig)])
+
+####################################
+
+@app.callback(
+    Output('hotel-topic-sliders','children'),
+    [Input('hotel-name', 'value')])
+def print_hotel_topic_sliders(hotel_name):
+    hotel_item = df_hotels[df_hotels['hotel_unique_name']==hotel_name]
+
+    topic_cnt = [int(hotel_item['0_neg']),int(hotel_item['1_neg']),int(hotel_item['2_neg']),int(hotel_item['3_neg']),
+                 int(hotel_item['4_neg']),int(hotel_item['5_neg']),int(hotel_item['6_neg']),int(hotel_item['7_neg'])]
+    max_topic_cnt = max(topic_cnt)
+
+    return html.Div([
+
+        dcc.Markdown('''
+**Adjust the number of negative mentions per topic:**
+    '''),
+
+        html.Div([daq.Slider(id='input-neg-4', min=0, max=topic_cnt[4], value=topic_cnt[4], step=1,
+        	handleLabel={"showCurrentValue": True,"label": "LOCATION"}, size=int(1+topic_cnt[4]/max_topic_cnt*500), color='#0D4A6F')],
+            style={'marginLeft': 40,'marginTop':45}),
+        html.Div([daq.Slider(id='input-neg-3', min=0, max=topic_cnt[3], value=topic_cnt[3], step=1,
+        	handleLabel={"showCurrentValue": True,"label": "FACILITIES"}, size=int(1+topic_cnt[3]/max_topic_cnt*500), color='#0D4A6F')],
+            style={'marginLeft': 40,'marginTop':45}),
+        html.Div([daq.Slider(id='input-neg-1', min=0, max=topic_cnt[1], value=topic_cnt[1], step=1,
+        	handleLabel={"showCurrentValue": True,"label": "STAFF"}, size=int(1+topic_cnt[1]/max_topic_cnt*500), color='#0D4A6F')],
+            style={'marginLeft': 40,'marginTop':45}),
+        html.Div([daq.Slider(id='input-neg-2', min=0, max=topic_cnt[2], value=topic_cnt[2], step=1,
+        	handleLabel={"showCurrentValue": True,"label": "BREAKFAST"}, size=int(1+topic_cnt[2]/max_topic_cnt*500), color='#0D4A6F')],
+            style={'marginLeft': 40,'marginTop':45}),       
+        html.Div([daq.Slider(id='input-neg-0', min=0, max=topic_cnt[0], value=topic_cnt[0], step=1,
+        	handleLabel={"showCurrentValue": True,"label": "COMFORT"}, size=int(1+topic_cnt[0]/max_topic_cnt*500), color='#0D4A6F')],
+            style={'marginLeft': 40,'marginTop':45}),
+        html.Div([daq.Slider(id='input-neg-6', min=0, max=topic_cnt[6], value=topic_cnt[6], step=1,
+        	handleLabel={"showCurrentValue": True,"label": "AMENITIES"}, size=int(1+topic_cnt[6]/max_topic_cnt*500), color='#0D4A6F')],
+            style={'marginLeft': 40,'marginTop':45}),
+        html.Div([daq.Slider(id='input-neg-5', min=0, max=topic_cnt[5], value=topic_cnt[5], step=1,
+        	handleLabel={"showCurrentValue": True,"label": "BATHROOM"}, size=int(1+topic_cnt[5]/max_topic_cnt*500), color='#0D4A6F')],
+            style={'marginLeft': 40,'marginTop':45}),
+        html.Div([daq.Slider(id='input-neg-7', min=0, max=topic_cnt[7], value=topic_cnt[7], step=1,
+        	handleLabel={"showCurrentValue": True,"label": "BED"}, size=int(1+topic_cnt[7]/max_topic_cnt*500), color='#0D4A6F')],
+            style={'marginLeft': 40,'marginTop':45})
+
+    	])
 
 ####################################
 
@@ -199,4 +213,4 @@ def update_price_wrapper(hotel_name,input_neg_0,input_neg_1,input_neg_2,input_ne
 ####################################
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True,dev_tools_ui=False)
