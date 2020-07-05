@@ -29,7 +29,7 @@ There are two folders in this repository:
 
 The code uses the following external libraries: BeautifulSoup, Numpy, Pandas, Nltk, Gensim, Scikit-Learn, Matplotlib, Plotly, Dash.  
 
-The order in which the notebooks should be run is the same order in which they were listed in the previous section. As already mentioned, in order to save the user some time the files generated in `p0-booking-reviews-scraping.ipynb` and needed by subsequent notebooks have been included in the `datasets` folder (as well as the manually-annotated dataset needed in `p2-reviews-topic-extraction.ipynb`).
+The order in which the notebooks should be run is the same order in which they were listed in the previous section. As mentioned, in order to save the user time the files generated in `p0-booking-reviews-scraping.ipynb` and needed by subsequent notebooks have already been included in the `datasets` folder (as well as the manually-annotated dataset needed in `p2-reviews-topic-extraction.ipynb`).
 
 
 
