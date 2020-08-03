@@ -16,6 +16,8 @@ from reviews_preprocessing_util import *
 # define main function
 def main():
 
+	print('Running p2_reviews_topic_extraction.py...')
+
     # load pre-trained word-embedding model
     print('Loading pre-trained FastText model. Might take a few minutes...')
     fasttext_model300 = api.load('fasttext-wiki-news-subwords-300')

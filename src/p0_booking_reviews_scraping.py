@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import requests
 import csv
+import sys
 from bs4 import BeautifulSoup
 
 # define functions for scraping
@@ -59,13 +60,21 @@ def build_rating_breakdown_list(cat_list,value_list):
             breakdown_list.append([cat_list[idx].get_text(),value_list[idx].get_text()])
     return breakdown_list
 
-# the user needs to change the line below to their own agent
-headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'}
-
 # define main function
 def main():
 
+    print('Running p0_booking_reviews_scraping.py...')
+
+    # get user agent and dates for hotel room price scraping from input file
+    with open(sys.argv[1]) as input_file:
+        user_agent = input_file.readline().rstrip('\n')
+        hotel_room_price_dates = [input_file.readline().rstrip('\n'),input_file.readline().rstrip('\n'),input_file.readline().rstrip('\n')]
+
+    # define user agent for web scraping
+    headers = {'User-Agent': user_agent}
+
     # get names and urls of hotels in NYS
+    print('Getting list of hotels in New York State...')
     next_page=True
     ip=1
     hotel_results_offset=0
@@ -91,8 +100,10 @@ def main():
             hotel_name = hotel_info_item.find(class_ = 'rlp-main-hotel__hotel-name-link').get_text()
             hotel_url = hotel_info_item.find(class_ = 'rlp-main-hotel__hotel-name-link')['href'].split('.html?')[0]
             writer.writerow([hotel_name,hotel_url])        
+    print('done')
 
     # get reviews of hotels in NYS
+    print('Getting reviews for all the hotels in New York State')
     nys_hotel_info_list_csvname = './input/nys_hotel_info_list.csv'
     df_nys_hotel_info_list = pd.read_csv(nys_hotel_info_list_csvname)
 
@@ -130,9 +141,11 @@ def main():
         
                 writer.writerow([df_nys_hotel_info_list['hotel_name'][idx],hotel_url_item.split('/hotel/us/')[1],review_date,
                 	             review_item_user_review_count,review_score_badge,review_item_header_content,review_info_tag,review_staydate,review_pos,review_neg])
+    print('done')
 
     # get detailed info of hotels in NYS (stars, location, room price, etc)
     # (obtaining room price info on THREE different days and saving that info into three different files)
+    print('Getting detailed hotel info and room prices...')
     for n_sample in range(3):
 
         nys_hotel_detailed_info_list_csvname = './input/sample' + str(n_sample) + '_nys_hotel_detailed_info_list.csv'
@@ -143,15 +156,7 @@ def main():
     
             for idx,hotel_url_item in enumerate(df_nys_hotel_info_list['hotel_url']):
         
-                # the user can change these dates if necessary
-                if n_sample==0:
-                    url_date_part = 'checkin=2020-09-15;checkout=2020-09-16'
-                elif n_sample==1:
-                    url_date_part = 'checkin=2020-10-13;checkout=2020-10-14'            
-                else:
-                    url_date_part = 'checkin=2020-11-03;checkout=2020-11-04'
-        
-                url= 'http://www.booking.com'+ hotel_url_item +'.html?' + url_date_part
+                url= 'http://www.booking.com'+ hotel_url_item +'.html?' + hotel_room_price_dates[n_sample]
                 response = requests.get(url,headers=headers)
                 hotel_info = BeautifulSoup(response.text, 'html.parser')
         
@@ -172,6 +177,7 @@ def main():
         
                 writer.writerow([df_nys_hotel_info_list['hotel_name'][idx],hotel_url_item.split('/hotel/us/')[1],hotel_stars,hotel_address,
                 	             hotel_overall_rating,hotel_rating_breakdown,hotel_room_name,hotel_room_capacity,hotel_room_price])
+    print('done')
 
     return
 

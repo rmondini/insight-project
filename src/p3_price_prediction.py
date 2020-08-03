@@ -9,6 +9,8 @@ from price_prediction_util import *
 # define main function
 def main():
 
+	print('Running p3_price_prediction.py...')
+
     # import dataset of detailed info (stars, ratings, location) for each hotel + room price on 3 different days
     df_hotel_detailed_info_list = pd.read_csv('./input/sample0_nys_hotel_detailed_info_list.csv')
     df_hotel_detailed_info_list_2 = pd.read_csv('./input/sample1_nys_hotel_detailed_info_list.csv')

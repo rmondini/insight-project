@@ -13,6 +13,8 @@ from reviews_preprocessing_util import *
 # define main function
 def main():
 
+	print('Running p1_reviews_preprocessing.py...')
+
     # import complete dataset of all reviews
     df_complete  = pd.read_csv('./input/sample0_nys_hotel_reviews_list.csv')
 
