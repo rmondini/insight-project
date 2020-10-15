@@ -44,7 +44,7 @@ In the `src` folder:
 - `p0_booking_reviews_scraping.py` contains the code needed to scrape reviews and detailed information (name, location, stars, ratings, room price) for all the hotels in the state of New York from booking.com.
 - `p1_reviews_preprocessing.py` performs the initial text cleaning and pre-processing on the review dataset.
 - `p2_reviews_topic_extraction.py` performs topic extraction on the negative reviews using soft cosine similarity between review sentences and an identified set of topics.
-- `p3_price_prediction.py` is where I built a linear regression model that predicts the room price for each hotel based on the number of negative sentences per topic and hotel features such as location, stars, and ratings.
+- `p3_price_prediction.py` is where I built a linear regression model that predicts the room price for each hotel using engineered topic features and hotel attributes such as location, stars, and ratings.
 - `reviews_preprocessing_util.py` and `price_prediction_util.py` contain the definition of modular functions needed by the other files.  
 
 In the `src_app` folder:
@@ -52,7 +52,7 @@ In the `src_app` folder:
 
 ### HOW TO RUN THE CODE
 
-The code uses the following external libraries: `BeautifulSoup, Numpy, Pandas, Nltk, Gensim, Scikit-Learn, Plotly, Dash`, which therefore need to be locally installed before running the code. The code can then be run with the command
+The code uses the following external libraries: `Beautiful Soup, NumPy, Pandas, NLTK, Gensim, Scikit-Learn, Plotly, Dash`, which therefore need to be locally installed before running the code. The code can then be run with the command
 ``` 
 insight-project$ ./run.sh
 ```
@@ -62,8 +62,3 @@ A local version of the web app can be built with
 ```
 insight-project$ python ./src_app/local_app.py
 ``` 
-
-
-
-
-
